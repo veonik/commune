@@ -15,35 +15,31 @@ Adafruit_VS1053_FilePlayer musicPlayer(SHIELD_RESET, SHIELD_CS, SHIELD_DCS, DREQ
 Radio *radio;
 
 void play() {
-    Serial.println(F("Playing track 001"));
-    musicPlayer.startPlayingFile("01.mp3");
+    Serial.println("Playing track 001");
+    if (!musicPlayer.startPlayingFile("01.mp3")) {
+        Serial.println("unable to play");
+    }
 }
 
-void sendStatus()
-{
+void sendStatus() {
     String body;
     if (musicPlayer.playingMusic) {
-        body += "Now playing: ";
-        body += musicPlayer.currentTrack.name();
+        body = "Playing a song";
     } else {
-        body += "Music not playing";
+        body = "Music not playing";
     }
     Message reply(body);
-    if (!radio->send(reply)) {
+    if (!radio->send(&reply)) {
         Serial.println(F("failed to send status"));
     } else {
         Serial.println(F("status sent"));
     }
 }
 
-void msghandler(Message message) {
-    Serial.println(F("handling message. Contents:"));
-    String messageBody = message.getBody();
-    Serial.print(messageBody);
-    Serial.println();
-    if (messageBody.startsWith(F("getstatus"))) {
+void handleMessage(Message *message) {
+    if (message->getBody().startsWith(F("getstatus"))) {
         sendStatus();
-    } else if (messageBody.startsWith(F("play"))) {
+    } else if (message->getBody().startsWith(F("play"))) {
         play();
     }
 }
@@ -64,7 +60,7 @@ void setup()
     musicPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT);
 
     radio = new CC1101Radio();
-    radio->listen(msghandler);
+    radio->listen(handleMessage);
 }
 
 void loop()

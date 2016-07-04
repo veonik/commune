@@ -15,28 +15,25 @@ void setup()
 
 unsigned long sentTime;
 
-void responseHandler(Message message) {
+void responseHandler(Message *message) {
     unsigned long recvTime = micros();
     Serial.println(F("Received response!"));
-    Serial.println(message.getBody());
+    Serial.println(message->getBody());
     Serial.print(F("Roundtrip delay: "));
     Serial.print((recvTime - sentTime) / 1000);
     Serial.println(F("ms"));
-    radio->stopListening();
 }
 
-void waitForResponse(Message message) {
-    if (!radio->isListening()) {
-        Serial.println(F("waiting for response..."));
-        radio->listen(responseHandler);
-    }
+void waitForResponse(Message *message) {
+    Serial.println(F("waiting for response..."));
+    radio->listen(responseHandler);
 }
 
 void sendCommand(String command) {
     sentTime = micros();
     Message msg(command);
     msg.then(waitForResponse);
-    if (!radio->send(msg)) {
+    if (!radio->send(&msg)) {
         Serial.println(F("message failed to send"));
         return;
     }
@@ -49,10 +46,10 @@ void loop()
 {
     radio->tick();
     if (Serial.available()) {
-        String cmd = Serial.readString();
-        if (cmd == "T") {
+        char cmd = (char) Serial.read();
+        if (cmd == 'T') {
             sendCommand(F("getstatus"));
-        } else if (cmd == "P") {
+        } else if (cmd == 'P') {
             sendCommand(F("play"));
         }
     }
