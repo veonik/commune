@@ -1,6 +1,8 @@
 commune
 =======
 
+[![Build Status](https://travis-ci.org/veonik/commune.svg?branch=master)](https://travis-ci.org/veonik/commune)
+
 A silly app with two components: a music playing, LED-driving receiver,
 and a transmitter.
 
