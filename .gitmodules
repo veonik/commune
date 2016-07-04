@@ -1,0 +1,9 @@
+[submodule "lib/CC1101"]
+	path = lib/CC1101
+	url = https://github.com/veonik/arduino-cc1101
+[submodule "lib/VS1053"]
+	path = lib/VS1053
+	url = https://github.com/adafruit/Adafruit_VS1053_Library.git
+[submodule "lib/synack"]
+	path = lib/synack
+	url = https://github.com/veonik/arduino-synack
